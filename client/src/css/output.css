@@ -768,7 +768,7 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
-.user-lst-msg {
+.people_name_parent {
   margin-left: 1rem;
 }
 
@@ -1584,6 +1584,10 @@ textarea::-webkit-scrollbar {
   margin-right: 1rem;
 }
 
+.mr-\[0\.2rem\] {
+  margin-right: 0.2rem;
+}
+
 .mt-0 {
   margin-top: 0px;
 }
@@ -1865,6 +1869,10 @@ textarea::-webkit-scrollbar {
 
 .w-9 {
   width: 2.25rem;
+}
+
+.w-\[2\.8rem\] {
+  width: 2.8rem;
 }
 
 .w-\[24rem\] {

@@ -1,5 +1,7 @@
+const currentUserId = document.body.dataset.currentUserId;
 let add_people_popup = document.getElementById("add-people-popup");
 let add_people_btn = document.getElementById("add-people-btn");
+// let add_people = document.querySelectorAll(".popup-people");
 let add_people_list = document.querySelector(".popup-people-all");
 let popup_search = document.getElementById("popup-search");
 let overlay = document.querySelector("#transparent-overlay");
@@ -12,6 +14,7 @@ let all_chats_children = all_chats.children;
 let chat_end = document.getElementById("chats-end");
 let chat_head = document.getElementById("chats-head");
 let chat_head_name = document.getElementById("chat-head-name");
+let chat_head_img = document.getElementById("chat-head-img");
 let to_user_info_popup = document.getElementById("to-user-info-popup");
 let to_user_info_btn = document.getElementById("to-user-info-btn");
 let idx = 0;
@@ -31,23 +34,43 @@ function getTime() {
   return time;
 }
 
-function chat_clicked(element) {
+const handleChatHeadAndEnd = (parsedElement) => {
+  chat_end.classList.remove("hidden");
+  chat_head.classList.remove("hidden");
+  chat_head_name.innerText = parsedElement.fullName;
+  chat_head_img.src = parsedElement.profilePic ? parsedElement.profilePic : `https://avatar.iran.liara.run/username?username=${parsedElement.fullName.replace(" ", "+")}`; 
+  to_user_info_popup.children[0].children[1].children[0].innerText = parsedElement.fullName;
+  to_user_info_popup.children[0].children[1].children[1].innerText = parsedElement.username;
+  to_user_info_popup.children[0].children[0].src = parsedElement.profilePic ? parsedElement.profilePic : `https://avatar.iran.liara.run/username?username=${parsedElement.fullName.replace(" ", "+")}`;
+};
+
+const handleChats = (parsedElement)=>{
+  let toUserProfileSecImgDiv = document.querySelector(".to-user-profile-sec-img");
+  let toUserProfileSecImg = toUserProfileSecImgDiv.children[0];
+  toUserProfileSecImg.src = parsedElement.profilePic ? parsedElement.profilePic : `https://avatar.iran.liara.run/username?username=${parsedElement.fullName.replace(" ", "+")}`;
+
+  let toUserProfileSecNameDiv = document.querySelector(".to-user-profile-sec-name");
+  let toUserProfileSecName = toUserProfileSecNameDiv.children[0];
+  let toUserProfileSecUsername = toUserProfileSecNameDiv.children[1];
+  toUserProfileSecName.innerText = parsedElement.fullName;
+  toUserProfileSecUsername.innerText = parsedElement.username;
+
+  
+}
+
+const chat_clicked = (element, htmlElement) => {
+  const parsedElement = JSON.parse(element);
+  // console.log(parsedElement.fullName);
+
   for (let i = 0; i < all_people_children.length; i++) {
     if (all_people_children[i].classList.contains("active")) {
       all_people_children[i].classList.remove("active");
     }
   }
+  // idx = Array.from(all_people_children).indexOf(element);
+  handleChatHeadAndEnd(parsedElement);
 
-  idx = Array.from(all_people_children).indexOf(element);
-
-  chat_end.classList.remove("hidden");
-  chat_head.classList.remove("hidden");
-  chat_head_name.innerText = all_people_names[idx].innerText;
-  console.log(to_user_info_popup.children[0]);
-  to_user_info_popup.children[0].children[1].children[0].innerText = all_people_names[idx].innerText;
-  to_user_info_popup.children[0].children[1].children[1].innerText = `@${all_people_names[idx].innerText}123`;
-
-  element.classList.add("active");
+  htmlElement.classList.add("active");
 
   for (let i = 0; i < all_chats_children.length; i++) {
     if (!all_chats_children[i].classList.contains("hidden")) {
@@ -57,6 +80,33 @@ function chat_clicked(element) {
 
   all_chats_children[idx].classList.remove("hidden");
   all_chats_children[idx].scrollTop = all_chats_children[idx].scrollHeight;
+}
+
+const createLeftsidePeople = (data) => {
+  let div = document.createElement("div");
+  div.classList.add("people-child");
+  div.onclick = () => chat_clicked(JSON.stringify(data),div);
+
+  let imgDiv = document.createElement("div");
+  imgDiv.classList.add("chats_img");
+
+  let img = document.createElement("img");
+  img.src = data.profilePic ? data.profilePic : `https://avatar.iran.liara.run/username?username=${data.fullName.replace(" ", "+")}`;
+
+  imgDiv.appendChild(img);
+  div.appendChild(imgDiv);
+
+  let nameDiv = document.createElement("div");
+  nameDiv.classList.add("people_name_parent");
+
+  let name = document.createElement("h4");
+  name.classList.add("people_name");
+  name.innerText = data.fullName;
+
+  nameDiv.appendChild(name);
+  div.appendChild(nameDiv);
+
+  all_people.appendChild(div);
 }
 
 function addActive(ele) {
@@ -76,7 +126,7 @@ overlay.addEventListener("click", () => {
 });
 
 add_people_btn.addEventListener("click", (event) => {
-  // event.stopPropagation();
+  event.stopPropagation();
   // document.body.style.overflow = "hidden";
   add_people_btn.classList.toggle("active");
   add_people_btn.classList.toggle("z-30");
@@ -91,6 +141,32 @@ add_people_btn.addEventListener("click", (event) => {
     overlay.classList.add("hidden");
   }
 });
+
+const addPeopleToChat = (event) => {
+  let xhr = new XMLHttpRequest();
+  xhr.open("POST", "/add-people-to-chat", true);
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.onreadystatechange = () => {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      if (xhr.status === 200) {
+        // console.log("xhr response: ", xhr.responseText);
+        const data = JSON.parse(xhr.responseText);
+        // console.log(data);
+        if(data.message === "Added people to chat") {
+            createLeftsidePeople(data.newPeople);
+        }
+      } else {
+        console.log("Error getting people", xhr.responseText);
+      }
+    }
+  };
+
+  xhr.send(JSON.stringify({ senderId: currentUserId, recieverId: event.dataset.id }));
+
+  overlay.click();
+}
+
+// show the added people in the chat
 
 to_user_info_btn.addEventListener("click", () => {
   if (to_user_info_popup.classList.contains("hidden")) {

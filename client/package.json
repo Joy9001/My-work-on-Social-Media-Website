@@ -5,11 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build:css": "npm-run-all --parallel  \"build:css:* {@}\" --",
-<<<<<<<< HEAD:client/package.json
-    "build:css:PeopleAndSearch": "tailwindcss -i ./public/css/style.css -o ./public/css/output.css"
-========
-    "build:css:PeopleAndSearch": "tailwindcss -i ./public/css/style.css -o ./public/css/output.css --watch"
->>>>>>>> 2691759892598d345f77660ceb614c86a97aab8c:People_Search_Pages/package.json
+    "build:css:PeopleAndSearch": "tailwindcss -i ./src/css/style.css -o ./src/css/output.css"
   },
   "keywords": [],
   "author": "",
@@ -23,10 +19,8 @@
     "tailwindcss": "^3.4.1"
   },
   "dependencies": {
-<<<<<<<< HEAD:client/package.json
     "ejs": "^3.1.9",
-========
->>>>>>>> 2691759892598d345f77660ceb614c86a97aab8c:People_Search_Pages/package.json
-    "emoji-picker-element": "^1.21.1"
+    "emoji-picker-element": "^1.21.1",
+    "socket.io-client": "^4.7.5"
   }
 }

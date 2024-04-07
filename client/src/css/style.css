@@ -167,7 +167,7 @@
     @apply shadow-md;
   }
 
-  .user-lst-msg {
+  .people_name_parent {
     @apply ml-4;
   }
 

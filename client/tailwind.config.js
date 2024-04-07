@@ -1,10 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-<<<<<<<< HEAD:client/tailwind.config.js
   content: ["./**/*.{html,js,ejs}"],
-========
-  content: ["./**/*.{html,js}"],
->>>>>>>> 2691759892598d345f77660ceb614c86a97aab8c:People_Search_Pages/tailwind.config.js
   safelist: [
     "bg-slate-500", "bg-white", "bg-slate-300", "bg-[#B8F1B0]", "bg-[#E8FFB1]", "border-[#F2F7A1]", "bg-[#B8F1B0]", "border-[#071952]", "backdrop-blur-sm", "bg-[#F3F8FF]", "fill-lightpurple", "fill-navhoverfill"
   ],
