@@ -243,26 +243,12 @@
   }
 
   .to-user-msg p {
-    @apply flex items-center justify-center text-right text-base font-medium text-wrap;
+    @apply text-right text-base font-medium text-wrap;
   }
-
-  /* .to-user-msg img {
-    @apply right-0 h-[30rem] w-[30rem] cursor-pointer rounded;
-  }
-
   .to-user-msg span {
     @apply text-right font-normal;
     font-size: 0.8rem;
   }
-
-  .to-user-msg audio::-webkit-media-controls-panel {
-    background-color: #eac7c7;
-    border-radius: 10px;
-  }
-
-  .to-user-msg video {
-    @apply h-[18rem] w-[30rem] rounded;
-  } */
 
   .from-user-msg {
     @apply relative my-3 mr-10 w-fit self-end rounded-md bg-[#dee2ff] p-3 text-right shadow-md max-w-md;
@@ -288,24 +274,11 @@
   .from-user-msg p {
     @apply text-left text-base font-medium text-wrap;
   }
-  /* 
-  .from-user-msg img {
-    @apply left-0 h-[30rem] w-[30rem] cursor-pointer rounded;
-  }
 
   .from-user-msg span {
     @apply text-right font-normal;
     font-size: 0.8rem;
   }
-
-  .from-user-msg audio::-webkit-media-controls-panel {
-    background-color: #7E30E1;
-    border-radius: 10px;
-  }
-
-  .from-user-msg video {
-    @apply h-[18rem] w-[30rem] rounded;
-  } */
 
   .all_chats_child {
     @apply flex w-full flex-col rounded bg-[#071952];
@@ -320,7 +293,7 @@
   }
 
   .day {
-    @apply absolute flex w-full flex-col justify-center;
+    @apply relative flex w-full flex-col justify-center;
   }
 
   .date {

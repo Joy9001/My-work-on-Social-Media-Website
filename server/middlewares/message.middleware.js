@@ -6,7 +6,7 @@ const {
 	getCurrentChatPeople,
 } = require("../helpers/getCurrentChatPeople.helper.js");
 
-const currentUserId = "66124703427423a7ae39b203";
+const currentUserId = require("../helpers/currentUserId.helper.js");
 
 const messageMiddleware = async (req, res) => {
 	try {

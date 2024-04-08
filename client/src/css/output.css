@@ -906,9 +906,6 @@ input:checked ~ .nm-toggle-bg {
 }
 
 .to-user-msg p {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   text-wrap: wrap;
   text-align: right;
   font-size: 1rem;
@@ -916,23 +913,11 @@ input:checked ~ .nm-toggle-bg {
   font-weight: 500;
 }
 
-/* .to-user-msg img {
-    @apply right-0 h-[30rem] w-[30rem] cursor-pointer rounded;
-  }
-
-  .to-user-msg span {
-    @apply text-right font-normal;
-    font-size: 0.8rem;
-  }
-
-  .to-user-msg audio::-webkit-media-controls-panel {
-    background-color: #eac7c7;
-    border-radius: 10px;
-  }
-
-  .to-user-msg video {
-    @apply h-[18rem] w-[30rem] rounded;
-  } */
+.to-user-msg span {
+  text-align: right;
+  font-weight: 400;
+  font-size: 0.8rem;
+}
 
 .from-user-msg {
   position: relative;
@@ -977,24 +962,11 @@ input:checked ~ .nm-toggle-bg {
   font-weight: 500;
 }
 
-/* 
-  .from-user-msg img {
-    @apply left-0 h-[30rem] w-[30rem] cursor-pointer rounded;
-  }
-
-  .from-user-msg span {
-    @apply text-right font-normal;
-    font-size: 0.8rem;
-  }
-
-  .from-user-msg audio::-webkit-media-controls-panel {
-    background-color: #7E30E1;
-    border-radius: 10px;
-  }
-
-  .from-user-msg video {
-    @apply h-[18rem] w-[30rem] rounded;
-  } */
+.from-user-msg span {
+  text-align: right;
+  font-weight: 400;
+  font-size: 0.8rem;
+}
 
 .chat-section {
   background-image: linear-gradient(
@@ -1026,7 +998,7 @@ input:checked ~ .nm-toggle-bg {
 }
 
 .day {
-  position: absolute;
+  position: relative;
   display: flex;
   width: 100%;
   flex-direction: column;
