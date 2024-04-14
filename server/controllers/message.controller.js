@@ -1,16 +1,17 @@
 const mongoose = require("mongoose");
-const User = require("../models/user.model");
+const User = require("../models/user.model.js");
 const addPeople = require("../helpers/addPeople.helper.js");
 const { getPeopleToChat } = require("../helpers/addPeopleToChat.helper.js");
 const {
 	getCurrentChatPeople,
 } = require("../helpers/getCurrentChatPeople.helper.js");
 
-const currentUserId = require("../helpers/currentUserId.helper.js");
+// const currentUserId = require("../helpers/currentUserId.helper.js");
 
-const messageMiddleware = async (req, res) => {
+const messageController = async (req, res) => {
+	const currentUserId = req.params.id;
 	try {
-		const peopleToAdd = await addPeople();
+		const peopleToAdd = await addPeople(currentUserId);
 		const currentUserAddedPeopleToChat = await getPeopleToChat(
 			currentUserId
 		);
@@ -33,4 +34,4 @@ const messageMiddleware = async (req, res) => {
 	}
 };
 
-module.exports = messageMiddleware;
+module.exports = messageController;

@@ -1,17 +1,18 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
+const User = require("./user.model.js");
 
 const addedPeopleToChatSchema = new Schema({
 	senderId: {
 		type: Schema.Types.ObjectId,
-		ref: "User",
+		ref: User,
 		required: true,
 	},
 
 	recivers: [
 		{
 			type: Schema.Types.ObjectId,
-			ref: "User",
+			ref: User,
 			required: true,
 		},
 	],

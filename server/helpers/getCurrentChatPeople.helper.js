@@ -1,10 +1,10 @@
 const User = require("../models/user.model");
 
-const getCurrentChatPeople = async (Recievers) => {
+const getCurrentChatPeople = async (Receivers) => {
 	try {
-		const promises = Recievers.map(async (reciever) => {
-			const findReciever = await User.findOne({ _id: reciever });
-			return findReciever;
+		const promises = Receivers.map(async (receiver) => {
+			const findReceiver = await User.findOne({ _id: receiver });
+			return findReceiver;
 		});
 
 		const currentChatPeople = await Promise.all(promises);

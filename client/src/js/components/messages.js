@@ -1,11 +1,11 @@
-const currentUserId = document.body.dataset.currentUserId;
+// const currentUserId = atob(document.body.dataset.currentUserId);
 let add_people_popup = document.getElementById("add-people-popup");
 let add_people_btn = document.getElementById("add-people-btn");
 // let add_people = document.querySelectorAll(".popup-people");
 let add_people_list = document.querySelector(".popup-people-all");
 let popup_search = document.getElementById("popup-search");
 let overlay = document.querySelector("#transparent-overlay");
-let msg_input = document.getElementById("msg-input");
+let msgInput = document.getElementById("msg-input");
 let all_people = document.getElementById("people-parent");
 let all_people_children = all_people.children;
 let all_people_names = document.querySelectorAll(".people_name");
@@ -36,14 +36,26 @@ function getTime() {
   return time;
 }
 
-
 const utcToLocal = (utcDate) => {
   const date = new Date(utcDate);
-  
-  const hours = ('0' + date.getHours()).slice(-2);
-  const minutes = ('0' + date.getMinutes()).slice(-2);
-  const day = (date.getDate()).toString();
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  const hours = ("0" + date.getHours()).slice(-2);
+  const minutes = ("0" + date.getMinutes()).slice(-2);
+  const day = date.getDate().toString();
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   const month = monthNames[date.getMonth()];
   const year = date.getFullYear();
 
@@ -56,15 +68,22 @@ const handleChatHeadAndEnd = (parsedElement) => {
   chat_end.classList.remove("hidden");
   chat_head.classList.remove("hidden");
   chat_head_name.innerText = parsedElement.fullName;
-  chat_head_img.src = parsedElement.profilePic ? parsedElement.profilePic : `https://avatar.iran.liara.run/username?username=${parsedElement.fullName.replace(" ", "+")}`; 
-  to_user_info_popup.children[0].children[1].children[0].innerText = parsedElement.fullName;
-  to_user_info_popup.children[0].children[1].children[1].innerText = parsedElement.username;
-  to_user_info_popup.children[0].children[0].src = parsedElement.profilePic ? parsedElement.profilePic : `https://avatar.iran.liara.run/username?username=${parsedElement.fullName.replace(" ", "+")}`;
+  chat_head_img.src = parsedElement.profilePic
+    ? parsedElement.profilePic
+    : `https://avatar.iran.liara.run/username?username=${parsedElement.fullName.replace(" ", "+")}`;
+  to_user_info_popup.children[0].children[1].children[0].innerText =
+    parsedElement.fullName;
+  to_user_info_popup.children[0].children[1].children[1].innerText =
+    parsedElement.username;
+  to_user_info_popup.children[0].children[0].src = parsedElement.profilePic
+    ? parsedElement.profilePic
+    : `https://avatar.iran.liara.run/username?username=${parsedElement.fullName.replace(" ", "+")}`;
 };
 
 const handleHtmlConversation = (data) => {
+  const currentUserId = atob(document.body.dataset.currentUserId);
   // console.log("Data: ", data);
-  if(data.messages.length === 0){
+  if (data.messages.length === 0) {
     msgContainerDiv.innerHTML = "";
     return;
   } else {
@@ -72,9 +91,9 @@ const handleHtmlConversation = (data) => {
     msgContainerDiv.innerHTML = "";
     let date = "";
     data.messages.forEach((msg) => {
-      // console.log("Message: ", typeof(msg.createdAt));
+      // console.log("Message: ", msg);
       let msgDate = utcToLocal(msg.createdAt);
-      if(msgDate.slice(6) !== date){
+      if (msgDate.slice(6) !== date) {
         date = utcToLocal(msg.createdAt).slice(6);
         const dayDiv = document.createElement("div");
         dayDiv.classList.add("day");
@@ -88,7 +107,7 @@ const handleHtmlConversation = (data) => {
         msgContainerDiv.appendChild(dayDiv);
       }
 
-      if(msg.senderId === currentUserId){
+      if (msg.senderId === currentUserId) {
         const msgDiv = document.createElement("div");
         msgDiv.classList.add("from-user-msg");
         msgDiv.innerHTML = `
@@ -107,44 +126,51 @@ const handleHtmlConversation = (data) => {
 
         msgContainerDiv.appendChild(msgDiv);
       }
-    })
+    });
     chatSection.scrollTop = chatSection.scrollHeight;
   }
 };
 
-const handleConversation = (recieverId) => {
+const handleConversation = (receiverId) => {
+  const currentUserId = atob(document.body.dataset.currentUserId);
   fetch("/get-conversation", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ senderId: currentUserId, recieverId })
+    body: JSON.stringify({ senderId: currentUserId, receiverId }),
   })
-  .then(res => res.json())
-  .then(data => {
-    handleHtmlConversation(data);
-  })
-}
+    .then((res) => res.json())
+    .then((data) => {
+      handleHtmlConversation(data);
+    });
+};
 
-const handleChats = (parsedElement)=>{
-  let toUserProfileSecImgDiv = document.querySelector(".to-user-profile-sec-img");
+const handleChats = (parsedElement) => {
+  let toUserProfileSecImgDiv = document.querySelector(
+    ".to-user-profile-sec-img",
+  );
   let toUserProfileSecImg = toUserProfileSecImgDiv.children[0];
-  toUserProfileSecImg.src = parsedElement.profilePic ? parsedElement.profilePic : `https://avatar.iran.liara.run/username?username=${parsedElement.fullName.replace(" ", "+")}`;
+  toUserProfileSecImg.src = parsedElement.profilePic
+    ? parsedElement.profilePic
+    : `https://avatar.iran.liara.run/username?username=${parsedElement.fullName.replace(" ", "+")}`;
 
-  let toUserProfileSecNameDiv = document.querySelector(".to-user-profile-sec-name");
+  let toUserProfileSecNameDiv = document.querySelector(
+    ".to-user-profile-sec-name",
+  );
   let toUserProfileSecName = toUserProfileSecNameDiv.children[0];
   let toUserProfileSecUsername = toUserProfileSecNameDiv.children[1];
   toUserProfileSecName.innerText = parsedElement.fullName;
   toUserProfileSecUsername.innerText = parsedElement.username;
 
-  let recieverId = parsedElement._id;
+  let receiverId = parsedElement._id;
 
-  handleConversation(recieverId);
+  handleConversation(receiverId);
+};
 
-}
-
-const chat_clicked = (element, htmlElement) => {
-  const parsedElement = JSON.parse(element);
+const chat_clicked = (htmlElement) => {
+  const element = htmlElement.dataset.element;
+  const parsedElement = JSON.parse(atob(element));
   // console.log(parsedElement.fullName);
 
   for (let i = 0; i < all_people_children.length; i++) {
@@ -156,46 +182,11 @@ const chat_clicked = (element, htmlElement) => {
   handleChatHeadAndEnd(parsedElement);
 
   htmlElement.classList.add("active");
-  if (chatSection.classList.contains("hidden")) chatSection.classList.remove("hidden");
+  if (chatSection.classList.contains("hidden"))
+    chatSection.classList.remove("hidden");
 
   handleChats(parsedElement);
-
-  // for (let i = 0; i < all_chats_children.length; i++) {
-  //   if (!all_chats_children[i].classList.contains("hidden")) {
-  //     all_chats_children[i].classList.add("hidden");
-  //   }
-  // }
-
-  // all_chats_children[idx].classList.remove("hidden");
-  // all_chats_children[idx].scrollTop = all_chats_children[idx].scrollHeight;
-}
-
-const createLeftsidePeople = (data) => {
-  let div = document.createElement("div");
-  div.classList.add("people-child");
-  div.onclick = () => chat_clicked(JSON.stringify(data),div);
-
-  let imgDiv = document.createElement("div");
-  imgDiv.classList.add("chats_img");
-
-  let img = document.createElement("img");
-  img.src = data.profilePic ? data.profilePic : `https://avatar.iran.liara.run/username?username=${data.fullName.replace(" ", "+")}`;
-
-  imgDiv.appendChild(img);
-  div.appendChild(imgDiv);
-
-  let nameDiv = document.createElement("div");
-  nameDiv.classList.add("people_name_parent");
-
-  let name = document.createElement("h4");
-  name.classList.add("people_name");
-  name.innerText = data.fullName;
-
-  nameDiv.appendChild(name);
-  div.appendChild(nameDiv);
-
-  all_people.appendChild(div);
-}
+};
 
 function addActive(ele) {
   ele.classList.add("active");
@@ -230,29 +221,66 @@ add_people_btn.addEventListener("click", (event) => {
   }
 });
 
-const addPeopleToChat = (event) => {
-  let xhr = new XMLHttpRequest();
-  xhr.open("POST", "/add-people-to-chat", true);
-  xhr.setRequestHeader("Content-Type", "application/json");
-  xhr.onreadystatechange = () => {
-    if (xhr.readyState === XMLHttpRequest.DONE) {
-      if (xhr.status === 200) {
-        // console.log("xhr response: ", xhr.responseText);
-        const data = JSON.parse(xhr.responseText);
-        // console.log(data);
-        if(data.message === "Added people to chat") {
-            createLeftsidePeople(data.newPeople);
-        }
-      } else {
-        console.log("Error getting people", xhr.responseText);
-      }
-    }
-  };
+const createLeftsidePeople = (data) => {
+  let parentDiv = document.createElement("div");
+  parentDiv.classList.add("people-child");
+  parentDiv.dataset.element = btoa(JSON.stringify(data));
+  parentDiv.onclick = () => chat_clicked(parentDiv);
 
-  xhr.send(JSON.stringify({ senderId: currentUserId, recieverId: event.dataset.id }));
+  let imgDiv = document.createElement("div");
+  imgDiv.classList.add("chats_img");
+  imgDiv.classList.add("indicator");
+
+  let statusDiv = `<span class="indicator-item badge badge-primary h-2 p-[0.4rem] translate-x-[5%] translate-y-[10%] hidden status"></span>`;
+
+  let img = document.createElement("img");
+  img.src = data.profilePic
+    ? data.profilePic
+    : `https://avatar.iran.liara.run/username?username=${data.fullName.replace(" ", "+")}`;
+  img.alt = data.fullName;
+
+  imgDiv.innerHTML = statusDiv;
+  imgDiv.appendChild(img);
+  parentDiv.appendChild(imgDiv);
+
+  let nameDiv = document.createElement("div");
+  nameDiv.classList.add("people_name_parent");
+
+  let name = document.createElement("h4");
+  name.classList.add("people_name");
+  name.innerText = data.fullName;
+
+  nameDiv.appendChild(name);
+  parentDiv.appendChild(nameDiv);
+
+  all_people.appendChild(parentDiv);
+};
+
+const addPeopleToChat = (event) => {
+  const currentUserId = atob(document.body.dataset.currentUserId);
+  fetch("/add-people-to-chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      senderId: currentUserId,
+      receiverId: event.dataset.id,
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.message === "Added people to chat") {
+        createLeftsidePeople(data.newPeople);
+        // console.log(data.newPeople);
+      }
+    })
+    .catch((error) => {
+      console.log("Error getting people", error);
+    });
 
   overlay.click();
-}
+};
 
 // show the added people in the chat
 
@@ -268,46 +296,102 @@ to_user_info_btn.addEventListener("click", () => {
   }
 });
 
-// send_btn.addEventListener("click", (e) => {
-//   let time = getTime();
+const handleHtmlSend = (msgRes) => {
+  let date = utcToLocal(msgRes.createdAt);
+  let msgDate = date.slice(6);
+  let msgTime = date.slice(0, 5);
 
-//   e.preventDefault();
-//   let raw_msg = msg_input.value;
-//   var msg = raw_msg.replace(/\n/g, "<br>");
-//   msg_input.value = "";
-//   msg_input.focus();
+  let dates = document.querySelectorAll(".date");
 
-//   let msg_div = document.createElement("div");
-//   msg_div.classList.add("from-user-msg");
-//   msg_div.innerHTML = `
-//     <p>${msg}</p>
-//     <span>${time}</span>
-//   `;
+  if (dates.length === 0 || dates[dates.length - 1].innerText !== msgDate) {
+    const dayDiv = document.createElement("div");
+    dayDiv.classList.add("day");
+    const dateDiv = document.createElement("div");
+    dateDiv.classList.add("date");
+    const dateh1 = document.createElement("h1");
+    dateh1.innerText = msgDate;
 
-//   if (msg.length > 0) {
-//     all_chats_children[
-//       idx
-//     ].children[1].lastElementChild.lastElementChild.appendChild(msg_div);
-//     all_chats_children[idx].scrollTop = all_chats_children[idx].scrollHeight;
-//   }
-// });
+    dateDiv.appendChild(dateh1);
+    dayDiv.appendChild(dateDiv);
+    msgContainerDiv.appendChild(dayDiv);
+  }
 
-// attachment_btn.addEventListener('click', () => {
-//   attachment_input.click();
-// })
+  let msg_div = document.createElement("div");
+  msg_div.classList.add("from-user-msg");
+  msg_div.innerHTML = `
+    <p>${msgRes.message}</p>
+    <span>${msgTime}</span>
+  `;
+  msgContainerDiv.appendChild(msg_div);
+  chatSection.scrollTop = chatSection.scrollHeight;
+};
 
-// attachment_input.addEventListener('change', () => {
-//   const file = attachment_input.files[0];
-//   msg_input.value += `Attached: ${file.name}`;
-// })
+const handleSendRequest = (receiverId, msg) => {
+  const currentUserId = atob(document.body.dataset.currentUserId);
+  fetch("/send-message", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      senderId: currentUserId,
+      receiverId: receiverId,
+      message: msg,
+    }),
+  })
+    .then((res) => {
+      // console.log(res);
+      return res.json();
+    })
+    .then((data) => {
+      handleHtmlSend(data);
+    });
+};
 
-// msg_input.addEventListener("keydown", (event) => {
-//   if (event.key === "Enter" && !event.shiftKey) {
-//     event.preventDefault();
-//     msg_input_form.submit();
-//   }
-//   else if (event.shiftKey && event.key === "Enter") {
-//     this.value += "\n";
-//     event.preventDefault();
-//   }
-// });
+send_btn.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  let raw_msg = msgInput.value;
+  let msg = raw_msg.replace(/\n/g, "<br>");
+  msgInput.value = "";
+  msgInput.focus();
+
+  if (msg.length > 0) {
+    let receiverData = JSON.parse(
+      atob(document.querySelector(".people-child.active").dataset.element),
+    );
+    let receiverId = receiverData._id;
+    handleSendRequest(receiverId, msg);
+  }
+});
+
+msgInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+
+    let raw_msg = msgInput.value;
+    let msg = raw_msg.replace(/\n/g, "<br>");
+    msgInput.value = "";
+    msgInput.focus();
+
+    if (msg.length > 0) {
+      let receiverData = JSON.parse(
+        atob(document.querySelector(".people-child.active").dataset.element),
+      );
+      let receiverId = receiverData._id;
+      handleSendRequest(receiverId, msg);
+    }
+  } else if (event.shiftKey && event.key === "Enter") {
+    const start = msgInput.selectionStart;
+    const end = msgInput.selectionEnd;
+    const textBefore = msgInput.value.substring(0, start);
+    const textAfter = msgInput.value.substring(end);
+    if (textAfter === "") {
+      msgInput.value = textBefore + "\n";
+    } else {
+      msgInput.value = textBefore + "\n" + textAfter;
+    }
+
+    msgInput.selectionStart = msgInput.selectionEnd = start;
+  }
+});

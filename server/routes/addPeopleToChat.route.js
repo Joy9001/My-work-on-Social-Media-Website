@@ -7,13 +7,13 @@ const User = require("../models/user.model");
 router.post("/add-people-to-chat", async (req, res) => {
 	try {
 		// console.log(req.body);
-		const { senderId, recieverId } = req.body;
-		const recieverObjectid = new mongoose.Types.ObjectId(`${recieverId}`);
-		const result = await addPeopleToChat(senderId, recieverId);
-		const findReciever = await User.findOne({
-			_id: recieverObjectid,
+		const { senderId, receiverId } = req.body;
+		const receiverObjectid = new mongoose.Types.ObjectId(`${receiverId}`);
+		const result = await addPeopleToChat(senderId, receiverId);
+		const findReceiver = await User.findOne({
+			_id: receiverObjectid,
 		});
-		// console.log(`findReciever: ${findReciever}`);
+		// console.log(`findReceiver: ${findReceiver}`);
 		if (result === "Already exists in the chat") {
 			return res.json({
 				message: "Already exists in the chat",
@@ -23,7 +23,7 @@ router.post("/add-people-to-chat", async (req, res) => {
 				.status(404)
 				.json({ message: "Error adding people to chat" });
 		}
-		res.json({ message: "Added people to chat", newPeople: findReciever });
+		res.json({ message: "Added people to chat", newPeople: findReceiver });
 	} catch (error) {
 		console.log("Error adding people to chat: ", error.message);
 	}

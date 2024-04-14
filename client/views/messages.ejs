@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="cupcake">
 
 <head>
   <meta charset="UTF-8" />
@@ -15,7 +15,7 @@
 
 <%- include('../public/svgs/icons.svg') %>
 
-<body class="font-mont font-emoji" data-current-user-id="<%= currentUserId %>">
+<body class="font-mont font-emoji" data-current-user-id="<%= btoa(currentUserId) %>">
   <!-- Upper Nav -->
   <div class="bg-navbg flex justify-between sticky top-0 w-full h-[3.5rem] px-4 ">
     <!-- left part -->
@@ -169,10 +169,11 @@
         <div id="people-parent" class="people-parent ml-6 mr-2 mt-2 overflow-y-auto *:bg-transparent">
           <% if (currentChatPeople) { %>
           <% currentChatPeople.forEach((element) => { %>
-          <div class="people-child" onclick="chat_clicked('<%= JSON.stringify(element) %>', this)">
-            <div class="chats_img">
+          <div class="people-child" data-element="<%= btoa(JSON.stringify(element)) %>" onclick="chat_clicked(this)">
+            <div class="chats_img indicator">
+              <span class="indicator-item badge badge-primary h-2 p-[0.4rem] translate-x-[5%] translate-y-[10%] hidden status"></span>
               <% if(element.profilePic){ %>
-              <img src="<%= element.profilePic %>" alt="User" />
+              <img src="<%= element.profilePic %>" alt="<%= element.fullName %>" />
               <% } else{ %>
               <img src="https://avatar.iran.liara.run/username?username=<%= element.fullName.replace(' ', '+') %>" alt="User" />
               <% } %>
@@ -205,7 +206,8 @@
         <div id="chats-head" class="chats-head absolute top-0 flex hidden h-16 w-full flex-row items-center justify-between shadow-2xl bg-[#b2aef4]">
           <!-- to user profile -->
           <div class="to-user-profile ml-4 flex flex-row items-center justify-center space-x-3">
-            <div class="chats_img flex h-10 w-10 items-center justify-center rounded-full">
+            <div class="chats_img flex h-10 w-10 items-center justify-center rounded-full indicator">
+              <span class="indicator-item badge badge-primary h-2 p-1 translate-x-[5%] translate-y-[10%] hidden status"></span>
               <a href="#">
                 <img id="chat-head-img" src="/assets/logo.jpeg" alt="User" />
               </a>
@@ -287,53 +289,14 @@
                     <h1>23 Feb, 2024</h1>
                   </div>
                 </div> -->
+
                 <!-- <div class="to-user-msg">
                   <p>Hey, how are you?</p>
                   <span>21:10</span>
-                </div>
+                </div> -->
 
-                <div class="from-user-msg">
+                <!-- <div class="from-user-msg">
                   <p>Hi Emma, I'm good. How about you?</p>
-                  <span>21:11</span>
-                </div>
-
-                <div class="to-user-msg">
-                  <p>I'm doing great! Just finished my project.</p>
-                  <span>21:10</span>
-                </div>
-
-                <div class="from-user-msg">
-                  <p>That's awesome! Congratulations!</p>
-                  <span>21:11</span>
-                </div>
-
-                <div class="to-user-msg">
-                  <p>Thank you! How about you? How's your day going?</p>
-                  <span>21:10</span>
-                </div>
-
-                <div class="from-user-msg">
-                  <p>It's been a busy day, but I'm managing.</p>
-                  <span>21:11</span>
-                </div>
-
-                <div class="to-user-msg">
-                  <p>Take some rest and relax. You deserve it!</p>
-                  <span>21:10</span>
-                </div>
-
-                <div class="from-user-msg">
-                  <p>Thanks, Emma! I'll definitely do that.</p>
-                  <span>21:11</span>
-                </div>
-
-                <div class="to-user-msg">
-                  <p>See you next week!</p>
-                  <span>21:10</span>
-                </div>
-
-                <div class="from-user-msg">
-                  <p>Bye!</p>
                   <span>21:11</span>
                 </div> -->
               </div>
@@ -563,6 +526,6 @@
 <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="/js/context/socketContext.js" defer></script>
+<script src="/js/socket/socket.js"></script>
 
 </html>

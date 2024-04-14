@@ -1,7 +1,7 @@
 const User = require("../models/user.model");
-const currentUserId = require("./currentUserId.helper.js");
+// const currentUserId = require("./currentUserId.helper.js");
 
-const addPeople = async () => {
+const addPeople = async (currentUserId) => {
 	try {
 		const people = (await User.find()).filter(
 			(person) => person._id.toString() !== currentUserId

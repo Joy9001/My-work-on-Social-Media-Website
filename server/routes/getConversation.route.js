@@ -4,12 +4,12 @@ const Conversation = require("../models/conversation.model.js");
 const getConversation = require("../helpers/getConversation.helper.js");
 
 router.post("/get-conversation", async (req, res) => {
-	const { senderId, recieverId } = req.body;
-	// console.log(senderId, recieverId);
+	const { senderId, receiverId } = req.body;
+	// console.log(senderId, receiverId);
 
 	try {
 		const findConversation = await Conversation.findOne({
-			participants: { $all: [senderId, recieverId] },
+			participants: { $all: [senderId, receiverId] },
 		});
 		// console.log(findConversation);
 		if (findConversation) {

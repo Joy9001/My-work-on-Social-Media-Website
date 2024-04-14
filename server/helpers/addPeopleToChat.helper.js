@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const AddedPeopleToChat = require("../models/addedPeopleToChat.model");
 // const user = require("../models/user.model");
 
-const addPeopleToChat = async (senderId, recieverId) => {
+const addPeopleToChat = async (senderId, receiverId) => {
 	try {
 		// console.log("inside addPeopleToChat: ", senderId);
 		const findSender = await AddedPeopleToChat.findOne({
@@ -10,15 +10,15 @@ const addPeopleToChat = async (senderId, recieverId) => {
 		});
 
 		if (findSender) {
-			if (findSender.recivers.includes(recieverId))
+			if (findSender.recivers.includes(receiverId))
 				return "Already exists in the chat";
 
-			findSender.recivers.push(recieverId);
+			findSender.recivers.push(receiverId);
 			await findSender.save();
 		} else {
 			const addedpeople = new AddedPeopleToChat({
 				senderId,
-				recivers: [recieverId],
+				recivers: [receiverId],
 			});
 
 			await addedpeople.save();

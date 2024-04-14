@@ -47,7 +47,7 @@
     height: 100vh;
     width: 100vw;
   }
-  
+
   .backimagerev {
     background-image: linear-gradient(
       245deg,
@@ -64,7 +64,6 @@
     /* height: 100vh;
     width: 100vw; */
   }
-  
 
   .bg-image {
     background-image: url("../assets/image1.jpg");
@@ -119,7 +118,7 @@
     @apply hidden rounded-lg bg-[#dee2ff];
   }
 
-  *:hover::-webkit-scrollbar-thumb{
+  *:hover::-webkit-scrollbar-thumb {
     @apply block;
   }
 
@@ -223,7 +222,7 @@
   }
 
   .to-user-msg {
-    @apply relative my-3 ml-10 w-fit self-start rounded-md bg-[#9376e0] p-3 text-left shadow-md max-w-md;
+    @apply relative my-3 ml-10 flex w-fit max-w-md flex-col self-start rounded-md bg-[#9376e0] p-3 text-left shadow-md;
     font-family: "Segoe UI Emoji", sans-serif;
   }
 
@@ -243,16 +242,15 @@
   }
 
   .to-user-msg p {
-    @apply text-right text-base font-medium text-wrap;
+    @apply text-wrap text-left text-base font-medium;
   }
   .to-user-msg span {
-    @apply text-right font-normal;
+    @apply self-end font-normal;
     font-size: 0.8rem;
   }
 
   .from-user-msg {
-    @apply relative my-3 mr-10 w-fit self-end rounded-md bg-[#dee2ff] p-3 text-right shadow-md max-w-md;
-    margin-right: 2rem;
+    @apply relative my-3 mr-10 flex w-fit max-w-md flex-col self-end rounded-md bg-[#dee2ff] p-3 text-left shadow-md;
     font-family: "Segoe UI Emoji", sans-serif;
   }
 
@@ -272,11 +270,11 @@
   }
 
   .from-user-msg p {
-    @apply text-left text-base font-medium text-wrap;
+    @apply text-wrap text-right text-base font-medium;
   }
 
   .from-user-msg span {
-    @apply text-right font-normal;
+    @apply self-start font-normal;
     font-size: 0.8rem;
   }
 
@@ -332,7 +330,7 @@
     z-index: 40 !important;
   } */
 
-  .emoji-popup-btn.active{
+  .emoji-popup-btn.active {
     @apply scale-110;
   }
 
@@ -367,20 +365,20 @@
   .search-result {
     @apply m-2 flex h-40 w-[30%] cursor-pointer items-center justify-center rounded-2xl bg-[#F3F8FF] p-1 shadow-md;
     background-image: linear-gradient(
-    135deg,
-  hsl(233deg 100% 94%) 0%,
-  hsl(234deg 100% 98%) 39%,
-  hsl(234deg 100% 98%) 61%,
-  hsl(233deg 100% 94%) 100%
-  );
+      135deg,
+      hsl(233deg 100% 94%) 0%,
+      hsl(234deg 100% 98%) 39%,
+      hsl(234deg 100% 98%) 61%,
+      hsl(233deg 100% 94%) 100%
+    );
   }
 
-  .search-result:hover{
-    @apply -translate-y-1 duration-200 shadow-xl;
+  .search-result:hover {
+    @apply -translate-y-1 shadow-xl duration-200;
   }
 
-  .search-result-info{
-    @apply max-3xl:w-[95%] flex-col space-y-1 ml-8 flex justify-center items-center;
+  .search-result-info {
+    @apply ml-8 flex flex-col items-center justify-center space-y-1 max-3xl:w-[95%];
   }
 
   .search-result-img {
@@ -392,7 +390,7 @@
   }
 
   .search-result-name {
-    @apply max-3xl:w-[95%] flex flex-col space-y-1 justify-center items-center;
+    @apply flex flex-col items-center justify-center space-y-1 max-3xl:w-[95%];
   }
 
   .search-result-name h4 {
@@ -408,11 +406,11 @@
   }
 
   .search-result-followers {
-    @apply max-3xl:hidden ;
+    @apply max-3xl:hidden;
   }
 
   .search-result-followers h6 {
-    @apply text-slate-500 font-medium;
+    @apply font-medium text-slate-500;
     font-size: 0.95rem;
   }
 }

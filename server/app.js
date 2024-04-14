@@ -8,6 +8,7 @@ const { app, io, server } = require("./helpers/socket.helper");
 const indexRouter = require("./routes/index.route");
 const addPeopleToChatRouter = require("./routes/addPeopleToChat.route");
 const getConversationRouter = require("./routes/getConversation.route");
+const sendMessageRouter = require("./routes/sendMessage.route");
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -24,6 +25,7 @@ app.set("view engine", "ejs");
 app.use(indexRouter);
 app.use(addPeopleToChatRouter);
 app.use(getConversationRouter);
+app.use(sendMessageRouter);
 
 server.listen(PORT, () => {
 	connectMongo();
