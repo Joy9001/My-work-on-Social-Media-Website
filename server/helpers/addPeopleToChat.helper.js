@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const AddedPeopleToChat = require("../models/addedPeopleToChat.model");
 // const user = require("../models/user.model");
 

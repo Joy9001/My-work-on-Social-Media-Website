@@ -222,7 +222,7 @@
   }
 
   .to-user-msg {
-    @apply relative my-3 ml-10 flex w-fit max-w-md flex-col self-start rounded-md bg-[#9376e0] p-3 text-left shadow-md;
+    @apply relative my-3 ml-10 flex w-fit max-w-md flex-row items-center justify-center self-start rounded-md bg-[#9376e0] p-3 text-left shadow-md;
     font-family: "Segoe UI Emoji", sans-serif;
   }
 
@@ -249,8 +249,12 @@
     font-size: 0.8rem;
   }
 
+  .to-user-msg:hover .delete-msg-btn {
+    @apply block;
+  }
+
   .from-user-msg {
-    @apply relative my-3 mr-10 flex w-fit max-w-md flex-col self-end rounded-md bg-[#dee2ff] p-3 text-left shadow-md;
+    @apply relative my-3 mr-10 flex w-fit max-w-md flex-row items-center justify-center self-end rounded-md bg-[#dee2ff] p-3 text-left shadow-md;
     font-family: "Segoe UI Emoji", sans-serif;
   }
 
@@ -276,6 +280,10 @@
   .from-user-msg span {
     @apply self-start font-normal;
     font-size: 0.8rem;
+  }
+
+  .from-user-msg:hover .delete-msg-btn {
+    @apply block;
   }
 
   .all_chats_child {

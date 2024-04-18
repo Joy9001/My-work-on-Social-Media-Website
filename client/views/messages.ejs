@@ -142,7 +142,7 @@
               <!-- all users -->
               <div class="popup-people-all mt-2 flex h-[calc(100%-6rem)] grow flex-col overflow-y-auto">
                 <% peopleToAdd.forEach(element => { %>
-                <div class="popup-people" data-id="<%= element._id %>" onclick="addPeopleToChat(this)">
+                <div class="popup-people" data-id="<%= element._id %>" data-element="<%= btoa(JSON.stringify(element)) %>" onclick="addPeopleToChat(this)">
                   <% if(element.profilePic){ %>
                   <img src="<%=element.profilePic %>" alt="User" />
                   <% } else{ %>
@@ -171,7 +171,7 @@
           <% currentChatPeople.forEach((element) => { %>
           <div class="people-child" data-element="<%= btoa(JSON.stringify(element)) %>" onclick="chat_clicked(this)">
             <div class="chats_img indicator">
-              <span class="indicator-item badge badge-primary h-2 p-[0.4rem] translate-x-[5%] translate-y-[10%] hidden status"></span>
+              <span class="indicator-item badge badge-success h-2 p-[0.4rem] translate-x-[5%] translate-y-[10%] hidden status"></span>
               <% if(element.profilePic){ %>
               <img src="<%= element.profilePic %>" alt="<%= element.fullName %>" />
               <% } else{ %>
@@ -181,6 +181,10 @@
 
             <div class="people_name_parent">
               <h4 class="people_name"><%= element.fullName %></h4>
+            </div>
+
+            <div class="unread-badge absolute right-8 hidden">
+              <div class="badge badge-accent">9</div>
             </div>
           </div>
           <% }) %>
@@ -207,7 +211,7 @@
           <!-- to user profile -->
           <div class="to-user-profile ml-4 flex flex-row items-center justify-center space-x-3">
             <div class="chats_img flex h-10 w-10 items-center justify-center rounded-full indicator">
-              <span class="indicator-item badge badge-primary h-2 p-1 translate-x-[5%] translate-y-[10%] hidden status"></span>
+              <span class="indicator-item badge badge-success h-2 p-1 translate-x-[5%] translate-y-[10%] hidden status"></span>
               <a href="#">
                 <img id="chat-head-img" src="/assets/logo.jpeg" alt="User" />
               </a>
@@ -217,6 +221,14 @@
                 <h1 id="chat-head-name">Emma</h1>
               </a>
             </div>
+          </div>
+
+          <!-- alert -->
+          <div role="alert" class="alert absolute right-18 hidden h-12 w-80 p-[0.7rem] justify-center items-center font-medium border-2 border-solid border-[#9376E0] text-[#3c096c]">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class=" shrink-0 w-6 h-6" stroke="#9376e0">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Deleted Message For Both</span>
           </div>
 
           <!-- to user info -->
@@ -289,16 +301,33 @@
                     <h1>23 Feb, 2024</h1>
                   </div>
                 </div> -->
-
                 <!-- <div class="to-user-msg">
-                  <p>Hey, how are you?</p>
-                  <span>21:10</span>
+                  <div class="msg-container">
+                    <p>Hi</p>
+                    <span>11:11</span>
+                  </div>
+                  <div class="pl-2 delete-msg-btn hidden">
+                    <button class="btn btn-circle btn-outline btn-secondary h-6 w-6 min-h-4 group">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#9376E0]" fill="none" viewBox="0 0 24 24" stroke="#dee2ff">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
                 </div> -->
 
                 <!-- <div class="from-user-msg">
-                  <p>Hi Emma, I'm good. How about you?</p>
-                  <span>21:11</span>
-                </div> -->
+                  <div class="pr-2 delete-msg-btn hidden">
+                    <button class="btn btn-circle btn-outline btn-accent h-6 w-6 min-h-4 group">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#dee2ff]" fill="none" viewBox="0 0 24 24" stroke="#9376E0">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="msg-container">
+                    <p>Hi</p>
+                    <span>11:11</span>
+                  </div> 
+                </div>  -->
               </div>
             </div>
           </div>
@@ -471,7 +500,6 @@
               <!-- <a href="#"> -->
               <div id="account" class="h-[40px] w-[40px] rounded-full hover:scale-110 duration-200 border-black ">
               </div>
-
             </div>
             <!-- Text -->
             <div class="flex flex-col py-1">
