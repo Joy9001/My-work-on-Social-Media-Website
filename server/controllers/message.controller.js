@@ -11,61 +11,58 @@ const { io, getReceiverSocketId } = require("../helpers/socket.helper");
 
 const messageController = async (req, res) => {
 	const currentUserId = req.params.id;
+	let unreadMesseges = [];
+
 	try {
 		const peopleToAdd = await addPeople(currentUserId);
 		const currentUserAddedPeopleToChat = await getPeopleToChat(
 			currentUserId
 		);
-		// console.log(currentChatPeople);
+
 		let currentChatPeople = [];
 		if (currentUserAddedPeopleToChat) {
 			currentChatPeople = await getCurrentChatPeople(
 				currentUserAddedPeopleToChat.recivers
 			);
-			// console.log("currentChatPeople: ", currentChatPeople);
 		}
 
-		let unreadMsgCount = [];
-		if (currentChatPeople) {
-			currentChatPeople.forEach(async (person) => {
-				let findConversation = await Conversation.findOne({
-					participants: { $all: [currentUserId, person._id] },
-				});
-				// console.log("findConversation: ", findConversation);
-				if (findConversation) {
-					let findUnreadMsgCount =
-						findConversation.unreadMsgCount.find(
-							(obj) =>
-								obj.userId.toString() === person._id.toString()
-						);
+		const unreadMessagePromises = currentChatPeople.map(async (person) => {
+			let findConversation = await Conversation.findOne({
+				participants: { $all: [currentUserId, person._id] },
+			});
 
-					if (findUnreadMsgCount) {
-						unreadMsgCount.push(findUnreadMsgCount);
-					} else {
-						unreadMsgCount.push({
-							userId: person._id,
-							unreadCount: 0,
-						});
-					}
+			if (findConversation) {
+				let findUnreadMsgCount = findConversation.unreadMsgCount.find(
+					(obj) => obj.senderId.toString() === person._id.toString()
+				);
+
+				if (findUnreadMsgCount) {
+					unreadMesseges.push(findUnreadMsgCount);
 				} else {
-					unreadMsgCount.push({
-						userId: person._id,
+					unreadMesseges.push({
+						senderId: person._id,
+						receiverId: currentUserId,
 						unreadCount: 0,
 					});
 				}
-			});
-		}
-
-		// print
-		unreadMsgCount.forEach((obj) => {
-			console.log("Unread Msg Count: ", obj);
+			} else {
+				unreadMesseges.push({
+					senderId: person._id,
+					receiverId: currentUserId,
+					unreadCount: 0,
+				});
+			}
 		});
 
+		await Promise.all(unreadMessagePromises);
+
+		// console.log("Unread Msg Count: ", unreadMesseges);
+
 		return res.render("messages", {
-			peopleToAdd: peopleToAdd,
-			currentUserId: currentUserId,
-			currentChatPeople: currentChatPeople,
-			unreadMsgCount: unreadMsgCount,
+			peopleToAdd,
+			currentUserId,
+			currentChatPeople,
+			unreadMesseges,
 		});
 	} catch (error) {
 		console.log("Error getting people: ", error);
@@ -88,7 +85,8 @@ const sendMessageController = async (req, res) => {
 				messages: [],
 				unreadMsgCount: [
 					{
-						userId: receiverId,
+						senderId: senderId,
+						receiverId: receiverId,
 						unreadCount: 1,
 					},
 				],
@@ -173,11 +171,8 @@ const deleteMessageController = async (req, res) => {
 };
 
 const unreadMessageController = async (req, res) => {
-	const {
-		senderId,
-		receiverId,
-		unreadMsgCount: newUnreadMsgCount,
-	} = req.body;
+	const { senderId, receiverId, unreadMsgCount } = req.body;
+	// console.log(senderId, receiverId, unreadMsgCount);
 	try {
 		let findConversation = await Conversation.findOne({
 			participants: { $all: [senderId, receiverId] },
@@ -185,15 +180,17 @@ const unreadMessageController = async (req, res) => {
 
 		if (findConversation) {
 			let findUnreadMsgCount = findConversation.unreadMsgCount.find(
-				(obj) => obj.userId.toString() === receiverId.toString()
+				(obj) => obj.senderId.toString() === senderId.toString()
 			);
 
+			// console.log("findUnreadMsgCount: ", findUnreadMsgCount);
 			if (findUnreadMsgCount) {
-				findUnreadMsgCount.unreadCount = newUnreadMsgCount;
+				findUnreadMsgCount.unreadCount = unreadMsgCount;
 			} else {
 				findConversation.unreadMsgCount.push({
-					userId: receiverId,
-					unreadCount: newUnreadMsgCount,
+					senderId: senderId,
+					receiverId: receiverId,
+					unreadCount: unreadMsgCount,
 				});
 			}
 			await findConversation.save();
@@ -202,8 +199,9 @@ const unreadMessageController = async (req, res) => {
 				participants: [senderId, receiverId],
 				unreadMsgCount: [
 					{
-						userId: receiverId,
-						unreadCount: newUnreadMsgCount,
+						senderId: senderId,
+						receiverId: receiverId,
+						unreadCount: unreadMsgCount,
 					},
 				],
 			});
@@ -213,7 +211,7 @@ const unreadMessageController = async (req, res) => {
 			.status(200)
 			.json({ message: "Unread message count updated" });
 	} catch (error) {
-		console.log("Error updating unread message count: ", error.message);
+		console.log("Error updating unread message count: ", error);
 	}
 };
 

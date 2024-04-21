@@ -79,6 +79,20 @@ const handleChatHeadAndEnd = (parsedElement) => {
 	to_user_info_popup.children[0].children[0].src = parsedElement.profilePic
 		? parsedElement.profilePic
 		: `https://avatar.iran.liara.run/username?username=${parsedElement.fullName.replace(" ", "+")}`;
+
+	let status = document.querySelectorAll(".status");
+	let isOnline = false;
+	status.forEach((stat) => {
+		if (!stat.classList.contains("hidden")) {
+			isOnline = true;
+		}
+	});
+
+	if (isOnline) {
+		chat_head.children[0].children[0].children[0].classList.remove(
+			"hidden"
+		);
+	}
 };
 
 const handleHtmlConversation = (data) => {
@@ -186,6 +200,12 @@ const handleChats = (parsedElement) => {
 };
 
 const chat_clicked = (htmlElement) => {
+	let unreadElement = htmlElement.children[2];
+	unreadElement.children[0].innerText = 0;
+	unreadElement.classList.contains("hidden")
+		? null
+		: unreadElement.classList.add("hidden");
+
 	const element = htmlElement.dataset.element;
 	const parsedElement = JSON.parse(atob(element));
 	// console.log(parsedElement.fullName);
@@ -195,7 +215,7 @@ const chat_clicked = (htmlElement) => {
 			all_people_children[i].classList.remove("active");
 		}
 	}
-	// idx = Array.from(all_people_children).indexOf(element);
+
 	handleChatHeadAndEnd(parsedElement);
 
 	htmlElement.classList.add("active");
@@ -248,7 +268,7 @@ const createLeftsidePeople = (data) => {
 	imgDiv.classList.add("chats_img");
 	imgDiv.classList.add("indicator");
 
-	let statusDiv = `<span class="indicator-item badge badge-primary h-2 p-[0.4rem] translate-x-[5%] translate-y-[10%] hidden status"></span>`;
+	let statusDiv = `<span class="indicator-item badge badge-success h-2 p-[0.4rem] translate-x-[5%] translate-y-[10%] hidden status"></span>`;
 
 	let img = document.createElement("img");
 	img.src = data.profilePic
@@ -280,6 +300,7 @@ const createLeftsidePeople = (data) => {
 	all_people.appendChild(parentDiv);
 
 	chat_clicked(parentDiv);
+	handleHtmlOnlineUsers(atob(onlineUsers));
 };
 
 const addPeopleToChat = (event) => {
@@ -319,7 +340,7 @@ const addPeopleToChat = (event) => {
 			});
 	} else {
 		chat_clicked(clickedPerson);
-		handleHtmlOnlineUsers();
+		// console.log("Online users here", atob(onlineUsers));
 	}
 
 	overlay.click();

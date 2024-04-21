@@ -17,9 +17,17 @@ router.post("/get-conversation", async (req, res) => {
 				return res.status(200).json({ messages: [] });
 			} else {
 				try {
+					findConversation.unreadMsgCount.forEach((obj) => {
+						if (obj.senderId.toString() === receiverId.toString()) {
+							console.log("obj unreadCount", obj.unreadCount);
+							obj.unreadCount = 0;
+						}
+					});
+					await findConversation.save();
 					const conversation = await getConversation(
 						findConversation.messages
 					);
+
 					return res.status(200).json({ messages: conversation });
 				} catch (error) {
 					console.log("Error getting conversation: ", error.message);

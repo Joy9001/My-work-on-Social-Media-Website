@@ -7,16 +7,16 @@ const messageSchema = new Schema(
 		senderId: {
 			type: Schema.Types.ObjectId,
 			ref: User,
-			required: true,
+			required: [true, "senderId is required"],
 		},
 		receiverId: {
 			type: Schema.Types.ObjectId,
 			ref: User,
-			required: true,
+			required: [true, "receiverId is required"],
 		},
 		message: {
 			type: Schema.Types.String,
-			required: true,
+			required: [true, "message is required"],
 		},
 	},
 	{ timestamps: true }

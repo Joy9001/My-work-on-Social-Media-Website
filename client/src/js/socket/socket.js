@@ -70,7 +70,7 @@ const createLeftsidePeopleR = (data) => {
 	imgDiv.classList.add("chats_img");
 	imgDiv.classList.add("indicator");
 
-	let statusDiv = `<span class="indicator-item badge badge-primary h-2 p-[0.4rem] translate-x-[5%] translate-y-[10%] hidden status"></span>`;
+	let statusDiv = `<span class="indicator-item badge badge-success h-2 p-[0.4rem] translate-x-[5%] translate-y-[10%] status"></span>`;
 
 	let img = document.createElement("img");
 	img.src = data.profilePic
@@ -109,8 +109,10 @@ const socket = io("http://localhost:3000", {
 	},
 });
 
+let onlineUsers = [];
 socket.on("getOnlineUsers", (users) => {
 	console.log("Online users", users);
+	onlineUsers = btoa(users);
 	handleHtmlOnlineUsers(users);
 });
 
@@ -138,17 +140,23 @@ socket.on("newMessage", (message, senderId) => {
 			console.log("Sender not found", senderId);
 			return;
 		} else {
+			console.log("creating");
 			sender = createLeftsidePeopleR(
 				JSON.parse(atob(sender.dataset.element))
 			);
 		}
 	}
 
+	console.log("sender", sender.children[2]);
 	if (sender.classList.contains("active")) {
 		handleHtmlGet(message);
 	} else {
 		let unreadMsg = sender.children[2];
+		// console.log("sender", sender);
+		console.log("unreadMsg", unreadMsg);
 		let unreadMsgCount = parseInt(unreadMsg.innerText) + 1;
+		unreadMsg.children[0].innerText = unreadMsgCount;
+		unreadMsg.classList.remove("hidden");
 
 		fetch("/unread-message", {
 			method: "POST",
@@ -161,7 +169,7 @@ socket.on("newMessage", (message, senderId) => {
 				unreadMsgCount: unreadMsgCount,
 			}),
 		})
-			.then((res) => res.json)
+			.then((res) => res.json())
 			.then((data) => {
 				console.log("unread", data);
 			});

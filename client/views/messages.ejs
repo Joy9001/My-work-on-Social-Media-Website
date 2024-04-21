@@ -183,9 +183,16 @@
               <h4 class="people_name"><%= element.fullName %></h4>
             </div>
 
-            <div class="unread-badge absolute right-8 hidden">
-              <div class="badge badge-accent">9</div>
+            <% const unreadMsg = unreadMesseges.find((msg) => msg.senderId.toString() === element._id.toString()); %>
+            <% if (unreadMsg && unreadMsg.unreadCount != 0) { %>
+            <div class="unread-badge absolute right-8">
+              <div class="badge badge-accent"><%= unreadMsg.unreadCount %></div>
             </div>
+            <% } else { %>
+            <div class="unread-badge absolute right-8 hidden">
+              <div class="badge badge-accent">0</div>
+            </div>
+            <% } %>
           </div>
           <% }) %>
           <% } %>

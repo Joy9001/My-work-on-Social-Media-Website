@@ -4,14 +4,19 @@ const User = require("./user.model.js");
 const Message = require("./message.model.js");
 
 const unreadMsgCountSchema = new Schema({
-	userId: {
+	senderId: {
 		type: Schema.Types.ObjectId,
 		ref: User,
-		required: true,
+		required: [true, "senderId is required"],
+	},
+	receiverId: {
+		type: Schema.Types.ObjectId,
+		ref: User,
+		required: [true, "receiverId is required"],
 	},
 	unreadCount: {
 		type: Number,
-		required: true,
+		required: [true, "unreadCount is required"],
 		default: 0,
 	},
 });
@@ -22,6 +27,7 @@ const conversationSchema = new mongoose.Schema(
 			{
 				type: Schema.Types.ObjectId,
 				ref: User,
+				required: [true, "participants are required"],
 			},
 		],
 		messages: [
