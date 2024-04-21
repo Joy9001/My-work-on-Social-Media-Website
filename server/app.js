@@ -33,7 +33,8 @@ app.use(addPeopleToChatRouter);
 app.use(getConversationRouter);
 app.use(messageRouter);
 
-server.listen(PORT, () => {
-	connectMongo();
-	console.log(`Server is listening on port http://localhost:${PORT}`);
+server.listen(PORT, async () => {
+	await connectMongo().then(() => {
+		console.log(`Server is listening on port http://localhost:${PORT}`);
+	});
 });

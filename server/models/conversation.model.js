@@ -41,9 +41,29 @@ const conversationSchema = new mongoose.Schema(
 			type: Schema.Types.Boolean,
 			default: false,
 		},
+		blockedBy: {
+			type: Schema.Types.ObjectId,
+			ref: User,
+			default: null,
+		},
 		unreadMsgCount: [unreadMsgCountSchema],
 	},
 	{ timestamps: true }
+);
+
+// Pre Hooks
+conversationSchema.pre(
+	"deleteOne",
+	{ document: true, query: false },
+	async function (next) {
+		const Message = require("./message.model.js");
+		await Message.deleteMany({ _id: { $in: this.messages } })
+			.then(() => next())
+			.catch((error) => {
+				console.log("Error deleting conversation: ", error.message);
+				next(error);
+			});
+	}
 );
 
 const Conversation = mongoose.model("Conversation", conversationSchema);

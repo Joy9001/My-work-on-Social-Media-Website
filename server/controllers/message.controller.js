@@ -5,6 +5,7 @@ const {
 } = require("../helpers/getCurrentChatPeople.helper.js");
 const Message = require("../models/message.model");
 const Conversation = require("../models/conversation.model");
+const AddedPeopleToChat = require("../models/addedPeopleToChat.model");
 const { addPeopleToChat } = require("../helpers/addPeopleToChat.helper");
 const { io, getReceiverSocketId } = require("../helpers/socket.helper");
 // const currentUserId = require("../helpers/currentUserId.helper.js");
@@ -73,100 +74,85 @@ const sendMessageController = async (req, res) => {
 	const { senderId, receiverId, message } = req.body;
 
 	try {
-		//find conversation
-		let conversation = await Conversation.findOne({
-			participants: { $all: [senderId, receiverId] },
+		const msg = new Message({
+			senderId,
+			receiverId,
+			message,
 		});
 
-		// If not found create one
-		if (conversation === null) {
-			conversation = new Conversation({
-				participants: [senderId, receiverId],
-				messages: [],
-				unreadMsgCount: [
-					{
-						senderId: senderId,
-						receiverId: receiverId,
-						unreadCount: 1,
-					},
-				],
-			});
+		const savedMsg = await msg.save();
+		// console.log("Message saved: ", savedMsg);
+
+		// Socket functionality
+		const receiverSocketId = getReceiverSocketId(receiverId);
+		if (receiverSocketId) {
+			io.to(receiverSocketId).emit("newMessage", savedMsg, senderId);
+			console.log("Message sent to receiver", receiverSocketId);
 		}
 
-		if (!conversation.isBlocked) {
-			// Save the message
-			const msg = new Message({
-				senderId,
-				receiverId,
-				message,
-			});
-
-			const savedMsg = await msg.save();
-
-			conversation.messages.push(savedMsg._id);
-			await conversation.save();
-
-			// Add the sender to receiver's chat
-			addPeopleToChat(receiverId, senderId);
-
-			// Socket functionality
-			const receiverSocketId = getReceiverSocketId(receiverId);
-			if (receiverSocketId) {
-				io.to(receiverSocketId).emit("newMessage", savedMsg, senderId);
-				console.log("Message sent to receiver", receiverSocketId);
-			}
-
-			res.status(201).send(savedMsg);
-		} else {
-			res.status(400).send("You are blocked by the receiver");
-		}
+		res.status(201).send(savedMsg);
 	} catch (error) {
-		console.log("Error saving message: ", error);
+		console.log("Error sending message: ", error.message);
+		res.status(400).json({ messege: error.message });
 	}
 };
 
 const deleteMessageController = async (req, res) => {
 	const { senderId, receiverId, msgId } = req.body;
-	console.log("Message Id: ", msgId);
+	// console.log("Message Id: ", msgId);
 	try {
 		const findMsg = await Message.findOne({
 			_id: msgId,
 		});
 		if (findMsg) {
 			try {
-				const deleteMessage = await Message.deleteOne({
+				const deleteMessage = await Message.findOne({
 					_id: msgId,
 				});
 
-				await Conversation.updateOne(
-					{
-						participants: { $all: [senderId, receiverId] },
-					},
-					{
-						$pull: { messages: msgId },
+				if (deleteMessage) {
+					let deleteRes = await deleteMessage.deleteOne();
+
+					if (deleteRes.acknowledged === true) {
+						// Socket functionality
+						const receiverSocketId =
+							getReceiverSocketId(receiverId);
+						if (receiverSocketId) {
+							io.to(receiverSocketId).emit(
+								"deleteMessage",
+								msgId
+							);
+							console.log(
+								"Deleted Message Id sent to receiver",
+								receiverSocketId
+							);
+						}
+						return res
+							.status(200)
+							.json({ message: "Message deleted" });
 					}
-				);
-				// console.log(deleteMessage);
-				if (deleteMessage.acknowledged === true) {
-					// Socket functionality
-					const receiverSocketId = getReceiverSocketId(receiverId);
-					if (receiverSocketId) {
-						io.to(receiverSocketId).emit("deleteMessage", msgId);
-						console.log(
-							"Deleted Message Id sent to receiver",
-							receiverSocketId
-						);
-					}
-					return res.status(200).json({ message: "Message deleted" });
+				} else {
+					return res.json({ message: "Message not found" });
 				}
+				// await Conversation.updateOne(
+				// 	{
+				// 		participants: { $all: [senderId, receiverId] },
+				// 	},
+				// 	{
+				// 		$pull: { messages: msgId },
+				// 	}
+				// );
+				// console.log(deleteMessage);
 			} catch (error) {
 				console.log("Error deleting message: ", error.message);
+				return res.json({ message: "Error deleting message" });
 			}
 		} else {
 			return res.json({ message: "Message not found" });
 		}
 	} catch (error) {
 		console.log("Error finding message: ", error.message);
+		return res.json({ message: "Error finding message" });
 	}
 };
 
@@ -215,9 +201,141 @@ const unreadMessageController = async (req, res) => {
 	}
 };
 
+const deleteConversationController = async (req, res) => {
+	const { senderId, receiverId } = req.body;
+	try {
+		const findConversation = await Conversation.findOne({
+			participants: { $all: [senderId, receiverId] },
+		});
+
+		if (findConversation) {
+			await findConversation.deleteOne();
+		} else {
+			console.log("Conversation not found");
+		}
+
+		// Delete the receiver from AddedPeopleToChat
+		await AddedPeopleToChat.findOneAndUpdate(
+			{
+				senderId: senderId,
+			},
+			{
+				$pull: { recivers: receiverId },
+			},
+			{ new: true }
+		);
+
+		// Delete the sender from AddedPeopleToChat
+		await AddedPeopleToChat.findOneAndUpdate(
+			{
+				senderId: receiverId,
+			},
+			{
+				$pull: { recivers: senderId },
+			},
+			{ new: true }
+		);
+
+		// Socket functionality
+		const receiverSocketId = getReceiverSocketId(receiverId);
+		if (receiverSocketId) {
+			io.to(receiverSocketId).emit("deleteConversation", senderId);
+			console.log(
+				"Deleted Conversation sent to receiver",
+				receiverSocketId
+			);
+		}
+		return res.status(200).json({ message: "Conversation deleted" });
+	} catch (error) {
+		console.log("Error deleting conversation: ", error.message);
+		return res.status(400).json({ message: "Error deleting conversation" });
+	}
+};
+
+const blockUserController = async (req, res) => {
+	const { senderId, receiverId } = req.body;
+	try {
+		let conversation = await Conversation.findOne({
+			participants: { $all: [senderId, receiverId] },
+		});
+
+		if (conversation) {
+			conversation.isBlocked = true;
+			conversation.blockedBy = senderId;
+			await conversation.save();
+		} else {
+			let newConversation = new Conversation({
+				participants: [senderId, receiverId],
+				isBlocked: true,
+			});
+			await newConversation.save();
+		}
+
+		// Socket functionality
+		const receiverSocketId = getReceiverSocketId(receiverId);
+		if (receiverSocketId) {
+			io.to(receiverSocketId).emit("blockUser", senderId);
+			console.log("Blocked User sent to receiver", receiverSocketId);
+		}
+
+		return res.status(200).json({ message: "User blocked" });
+	} catch (error) {
+		console.log("Error blocking user: ", error.message);
+		return res.status(400).json({ message: "Error blocking user" });
+	}
+};
+
+const unblockUserController = async (req, res) => {
+	const { senderId, receiverId } = req.body;
+	// console.log("Unblock user: ", senderId, receiverId);
+	try {
+		let conversation = await Conversation.findOne({
+			participants: { $all: [senderId, receiverId] },
+		});
+
+		if (conversation) {
+			// console.log("Id compare: ", conversation.blockedBy, senderId);
+			if (conversation.blockedBy.toString() === senderId) {
+				conversation.isBlocked = false;
+				conversation.blockedBy = null;
+				await conversation.save();
+
+				// Socket functionality
+				const receiverSocketId = getReceiverSocketId(receiverId);
+				if (receiverSocketId) {
+					io.to(receiverSocketId).emit("unblockUser", senderId);
+					console.log(
+						"Unblocked User sent to receiver",
+						receiverSocketId
+					);
+				}
+			} else {
+				return res.status(400).json({
+					message: "Conversation is not blocked by you",
+				});
+			}
+		}
+		// } else {
+		// 	let newConversation = new Conversation({
+		// 		participants: [senderId, receiverId],
+		// 		isBlocked: false,
+		// 	});
+		// 	await newConversation.save();
+		// }
+
+		return res.status(200).json({ message: "User unblocked" });
+	} catch (error) {
+		console.log("Error unblocking user: ", error.message);
+		return res.status(400).json({ message: "Error unblocking user" });
+	}
+};
+
 module.exports = {
 	messageController,
 	sendMessageController,
 	deleteMessageController,
 	unreadMessageController,
+	deleteConversationController,
+	blockUserController,
+	unblockUserController,
 };

@@ -26,6 +26,7 @@ router.post("/add-people-to-chat", async (req, res) => {
 		res.json({ message: "Added people to chat", newPeople: findReceiver });
 	} catch (error) {
 		console.log("Error adding people to chat: ", error.message);
+		return res.status(500).json({ message: "Internal server error" });
 	}
 });
 

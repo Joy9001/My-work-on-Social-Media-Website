@@ -1,7 +1,7 @@
 const AddedPeopleToChat = require("../models/addedPeopleToChat.model");
 // const user = require("../models/user.model");
 
-const addPeopleToChat = async (senderId, receiverId) => {
+const addPeopleToChat = async (senderId, receiverId, next) => {
 	try {
 		// console.log("inside addPeopleToChat: ", senderId);
 		const findSender = await AddedPeopleToChat.findOne({
@@ -9,8 +9,9 @@ const addPeopleToChat = async (senderId, receiverId) => {
 		});
 
 		if (findSender) {
-			if (findSender.recivers.includes(receiverId))
+			if (findSender.recivers.includes(receiverId)) {
 				return "Already exists in the chat";
+			}
 
 			findSender.recivers.push(receiverId);
 			await findSender.save();
@@ -24,8 +25,8 @@ const addPeopleToChat = async (senderId, receiverId) => {
 		}
 		return "Added people to chat";
 	} catch (err) {
-		console.log("Error adding people to chat: ", err);
-		return "Error adding people to chat";
+		console.log("Error adding people to chat: ", err.message);
+		next(err);
 	}
 };
 

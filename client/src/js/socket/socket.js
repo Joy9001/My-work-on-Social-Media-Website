@@ -28,7 +28,7 @@ const handleHtmlGet = (message) => {
             <p>${message.message}</p>
             <span>${msgTime}</span>
         </div>
-        <div class="pl-2 delete-msg-btn hidden" onclick="delete_msg_clicked(this)">
+        <div class="pl-2 delete-msg-btn hidden" onclick="deleteMessege(this)">
         <button class="btn btn-circle btn-outline btn-secondary h-6 w-6 min-h-4 group">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#9376E0]" fill="none" viewBox="0 0 24 24" stroke="#dee2ff"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
@@ -64,7 +64,7 @@ const createLeftsidePeopleR = (data) => {
 	let parentDiv = document.createElement("div");
 	parentDiv.classList.add("people-child");
 	parentDiv.dataset.element = btoa(JSON.stringify(data));
-	parentDiv.onclick = () => chat_clicked(parentDiv);
+	parentDiv.onclick = () => chatClicked(parentDiv);
 
 	let imgDiv = document.createElement("div");
 	imgDiv.classList.add("chats_img");
@@ -117,7 +117,7 @@ socket.on("getOnlineUsers", (users) => {
 });
 
 socket.on("newMessage", (message, senderId) => {
-	// console.log("New message", message);
+	console.log("New message", message);
 	let leftPeople = document.querySelectorAll(".people-child");
 	let sender = "";
 	leftPeople.forEach((person) => {
@@ -202,6 +202,37 @@ socket.on("deleteMessage", (dltMsgId) => {
 			day.remove();
 		}
 	});
+});
+
+socket.on("deleteConversation", (senderId) => {
+	let receiver = document.querySelector(".people-child.active");
+	receiver.classList.remove("active");
+	receiver.classList.add("hidden");
+	chat_head.classList.add("hidden");
+	chat_mid.classList.add("hidden");
+	chat_end.classList.add("hidden");
+});
+
+socket.on("blockUser", (senderId) => {
+	console.log("Blocked user", senderId);
+	chat_end.classList.add("hidden");
+
+	let blockDiv = document.querySelector("#chats-end-block");
+	blockDiv.classList.remove("hidden");
+
+	let blockBtn = document.querySelector("#block-to-user");
+	blockBtn.classList.add("hidden");
+});
+
+socket.on("unblockUser", (senderId) => {
+	console.log("Unblocked user", senderId);
+	let blockDiv = document.querySelector("#chats-end-block");
+	blockDiv.classList.add("hidden");
+
+	let blockBtn = document.querySelector("#block-to-user");
+	blockBtn.classList.remove("hidden");
+
+	chat_end.classList.remove("hidden");
 });
 
 socket.on("connection", () => {

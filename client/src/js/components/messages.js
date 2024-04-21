@@ -9,7 +9,7 @@ let msgInput = document.getElementById("msg-input");
 let all_people = document.getElementById("people-parent");
 let all_people_children = all_people.children;
 let all_people_names = document.querySelectorAll(".people_name");
-// let all_chats = document.getElementById("all-chats");
+let chat_mid = document.getElementById("all-chats");
 let chatSection = document.querySelector(".chat-section");
 // let all_chats_children = all_chats.children;
 let chat_end = document.getElementById("chats-end");
@@ -65,9 +65,10 @@ const utcToLocal = (utcDate) => {
 
 // console.log(utcToLocal("2024-04-08T15:31:44.831Z"));
 
-const handleChatHeadAndEnd = (parsedElement) => {
+const handleChatHeadAndEnd = (parsedElement, isOnline) => {
 	chat_end.classList.remove("hidden");
 	chat_head.classList.remove("hidden");
+	chat_mid.classList.remove("hidden");
 	chat_head_name.innerText = parsedElement.fullName;
 	chat_head_img.src = parsedElement.profilePic
 		? parsedElement.profilePic
@@ -80,24 +81,19 @@ const handleChatHeadAndEnd = (parsedElement) => {
 		? parsedElement.profilePic
 		: `https://avatar.iran.liara.run/username?username=${parsedElement.fullName.replace(" ", "+")}`;
 
-	let status = document.querySelectorAll(".status");
-	let isOnline = false;
-	status.forEach((stat) => {
-		if (!stat.classList.contains("hidden")) {
-			isOnline = true;
-		}
-	});
-
 	if (isOnline) {
 		chat_head.children[0].children[0].children[0].classList.remove(
 			"hidden"
 		);
+	} else {
+		chat_head.children[0].children[0].children[0].classList.add("hidden");
 	}
 };
 
 const handleHtmlConversation = (data) => {
 	const currentUserId = atob(document.body.dataset.currentUserId);
 	// console.log("Data: ", data);
+
 	if (data.messages.length === 0) {
 		msgContainerDiv.innerHTML = "";
 		return;
@@ -105,6 +101,7 @@ const handleHtmlConversation = (data) => {
 		// console.log("Creating new conversation", data.messages);
 		msgContainerDiv.innerHTML = "";
 		let date = "";
+		data.messages = data.messages.filter((msg) => msg !== null);
 		data.messages.forEach((msg) => {
 			// console.log("Message: ", msg);
 			let msgDate = utcToLocal(msg.createdAt);
@@ -127,16 +124,16 @@ const handleHtmlConversation = (data) => {
 				msgDiv.classList.add("from-user-msg");
 				msgDiv.dataset.id = msg._id;
 				msgDiv.innerHTML = `
-          <div class="pr-2 delete-msg-btn hidden" onclick="delete_msg_clicked(this)">
-            <button class="btn btn-circle btn-outline btn-accent h-6 w-6 min-h-4 group">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#dee2ff]" fill="none" viewBox="0 0 24 24" stroke="#9376E0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-          </div>
-          <div class="msg-container">
-            <p>${msg.message}</p>
-            <span>${msgDate.slice(0, 5)}</span>
-          </div>
-        `;
+						<div class="pr-2 delete-msg-btn hidden" onclick="deleteMessege(this)">
+							<button class="btn btn-circle btn-outline btn-accent h-6 w-6 min-h-4 group">
+								<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#dee2ff]" fill="none" viewBox="0 0 24 24" stroke="#9376E0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+							</button>
+						</div>
+						<div class="msg-container">
+							<p>${msg.message}</p>
+							<span>${msgDate.slice(0, 5)}</span>
+						</div>
+					`;
 
 				msgContainerDiv.appendChild(msgDiv);
 			} else {
@@ -144,16 +141,16 @@ const handleHtmlConversation = (data) => {
 				msgDiv.classList.add("to-user-msg");
 				msgDiv.dataset.id = msg._id;
 				msgDiv.innerHTML = `
-          <div class="msg-container">
-            <p>${msg.message}</p>
-            <span>${msgDate.slice(0, 5)}</span>
-          </div>
-          <div class="pl-2 delete-msg-btn hidden" onclick="delete_msg_clicked(this)">
-          <button class="btn btn-circle btn-outline btn-secondary h-6 w-6 min-h-4 group">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#9376E0]" fill="none" viewBox="0 0 24 24" stroke="#dee2ff"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-          </button>
-          </div>
-        `;
+					<div class="msg-container">
+						<p>${msg.message}</p>
+						<span>${msgDate.slice(0, 5)}</span>
+					</div>
+					<div class="pl-2 delete-msg-btn hidden" onclick="deleteMessege(this)">
+						<button class="btn btn-circle btn-outline btn-secondary h-6 w-6 min-h-4 group">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-[#9376E0]" fill="none" viewBox="0 0 24 24" stroke="#dee2ff"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+						</button>
+					</div>
+				`;
 
 				msgContainerDiv.appendChild(msgDiv);
 			}
@@ -173,6 +170,23 @@ const handleConversation = (receiverId) => {
 	})
 		.then((res) => res.json())
 		.then((data) => {
+			console.log("data", data);
+			let isBlocked = data.isBlocked;
+			let blockedBy = data.blockedBy;
+			if (isBlocked) {
+				chat_end.classList.add("hidden");
+				let blockDiv = document.querySelector("#chats-end-block");
+				blockDiv.classList.remove("hidden");
+			}
+
+			if (blockedBy === currentUserId) {
+				let blockBtnChild =
+					document.querySelector("#block-to-user").children[0];
+				blockBtnChild.innerText = "Unblock";
+			} else if (blockedBy !== null) {
+				let blockBtn = document.querySelector("#block-to-user");
+				blockBtn.classList.add("hidden");
+			}
 			handleHtmlConversation(data);
 		});
 };
@@ -199,7 +213,7 @@ const handleChats = (parsedElement) => {
 	handleConversation(receiverId);
 };
 
-const chat_clicked = (htmlElement) => {
+const chatClicked = (htmlElement) => {
 	let unreadElement = htmlElement.children[2];
 	unreadElement.children[0].innerText = 0;
 	unreadElement.classList.contains("hidden")
@@ -216,7 +230,12 @@ const chat_clicked = (htmlElement) => {
 		}
 	}
 
-	handleChatHeadAndEnd(parsedElement);
+	let isOnline = false;
+	let statusElement = htmlElement.children[0].children[0];
+	if (!statusElement.classList.contains("hidden")) {
+		isOnline = true;
+	}
+	handleChatHeadAndEnd(parsedElement, isOnline);
 
 	htmlElement.classList.add("active");
 	if (chatSection.classList.contains("hidden"))
@@ -262,7 +281,7 @@ const createLeftsidePeople = (data) => {
 	let parentDiv = document.createElement("div");
 	parentDiv.classList.add("people-child");
 	parentDiv.dataset.element = btoa(JSON.stringify(data));
-	parentDiv.onclick = () => chat_clicked(parentDiv);
+	parentDiv.onclick = () => chatClicked(parentDiv);
 
 	let imgDiv = document.createElement("div");
 	imgDiv.classList.add("chats_img");
@@ -299,7 +318,7 @@ const createLeftsidePeople = (data) => {
 
 	all_people.appendChild(parentDiv);
 
-	chat_clicked(parentDiv);
+	chatClicked(parentDiv);
 	handleHtmlOnlineUsers(atob(onlineUsers));
 };
 
@@ -339,7 +358,7 @@ const addPeopleToChat = (event) => {
 				console.log("Error getting people", error);
 			});
 	} else {
-		chat_clicked(clickedPerson);
+		chatClicked(clickedPerson);
 		// console.log("Online users here", atob(onlineUsers));
 	}
 
@@ -382,7 +401,7 @@ const handleHtmlSend = (msgRes) => {
 	msg_div.classList.add("from-user-msg");
 	msg_div.dataset.id = msgRes._id;
 	msg_div.innerHTML = `
-    <div class="pr-2 delete-msg-btn hidden" onclick="delete_msg_clicked(this)">
+    <div class="pr-2 delete-msg-btn hidden" onclick="deleteMessege(this)">
     	<button class="btn btn-circle btn-outline btn-accent h-6 w-6 min-h-4 group">
         	<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:stroke-  [#dee2ff]" fill="none" viewBox="0 0 24 24" stroke="#9376E0"><path   stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
     	</button>
@@ -469,7 +488,7 @@ msgInput.addEventListener("keydown", (event) => {
 	}
 });
 
-const delete_msg_clicked = (btn) => {
+const deleteMessege = (btn) => {
 	let parent = btn.parentElement;
 	let sibling = "";
 
@@ -514,4 +533,96 @@ const delete_msg_clicked = (btn) => {
 				}, 5000);
 			}
 		});
+};
+
+const deleteConversation = () => {
+	let receiver = document.querySelector(".people-child.active");
+	let receiverData = JSON.parse(atob(receiver.dataset.element));
+	let receiverId = receiverData._id;
+
+	fetch("/delete-conversation", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			senderId: atob(document.body.dataset.currentUserId),
+			receiverId,
+		}),
+	})
+		.then((res) => res.json())
+		.then((data) => {
+			console.log(data.message);
+			if (data.message === "Conversation deleted") {
+				receiver.classList.remove("active");
+				receiver.classList.add("hidden");
+				chat_head.classList.add("hidden");
+				chat_mid.classList.add("hidden");
+				chat_end.classList.add("hidden");
+			}
+		});
+};
+
+const handleBlockUser = (currentUserId, receiverId, htmlElement) => {
+	fetch("/block-user", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			senderId: currentUserId,
+			receiverId,
+		}),
+	})
+		.then((res) => res.json())
+		.then((data) => {
+			console.log(data.message);
+			if (data.message === "User blocked") {
+				htmlElement.children[0].innerText = "Unblock";
+				chat_end.classList.add("hidden");
+
+				let blockDiv = document.querySelector("#chats-end-block");
+				blockDiv.classList.remove("hidden");
+			}
+		});
+};
+
+const handleUnblockUser = (currentUserId, receiverId, htmlElement) => {
+	fetch("/unblock-user", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			senderId: currentUserId,
+			receiverId,
+		}),
+	})
+		.then((res) => res.json())
+		.then((data) => {
+			console.log(data.message);
+			if (data.message === "User unblocked") {
+				htmlElement.children[0].innerText = "Block";
+
+				let blockDiv = document.querySelector("#chats-end-block");
+				blockDiv.classList.add("hidden");
+
+				chat_end.classList.remove("hidden");
+			}
+		});
+};
+
+const blockUnblockUser = (htmlElement) => {
+	let receiver = document.querySelector(".people-child.active");
+	let receiverData = JSON.parse(atob(receiver.dataset.element));
+	let receiverId = receiverData._id;
+	let currentUserId = atob(document.body.dataset.currentUserId);
+
+	let blockStatus = htmlElement.children[0].innerText;
+
+	if (blockStatus === "Block") {
+		handleBlockUser(currentUserId, receiverId, htmlElement);
+	} else {
+		handleUnblockUser(currentUserId, receiverId, htmlElement);
+	}
 };
