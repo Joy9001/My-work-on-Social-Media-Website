@@ -24,6 +24,7 @@ let send_btn = document.getElementById("send-btn");
 let head_3_children = document.querySelectorAll(".head-3-child");
 let emoji_popup = document.getElementById("emoji-popup");
 let delete_msg_btn = document.querySelectorAll(".delete-msg-btn");
+let addPeopleSearchBtn = document.querySelector(".add-people-search-btn");
 
 function getTime() {
 	let date = new Date();
@@ -626,3 +627,5 @@ const blockUnblockUser = (htmlElement) => {
 		handleUnblockUser(currentUserId, receiverId, htmlElement);
 	}
 };
+
+addPeopleSearchBtn.addEventListener("click", () => {});
