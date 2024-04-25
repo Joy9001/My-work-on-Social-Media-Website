@@ -141,11 +141,11 @@
 
               <!-- all users -->
               <div class="popup-people-all mt-2 flex h-[calc(100%-6rem)] grow flex-col overflow-y-auto">
-                <% peopleToAdd.forEach(element=> { %>
-                <div class="popup-people" data-id="<%= element._id %>" data-element="<%= btoa(JSON.stringify(element)) %>" onclick="addPeopleToChat(this)">
-                  <% if(element.profilePic){ %>
+                <% peopleToAdd.forEach((element) => { %>
+                <div class="popup-people" data-id="<%= btoa(element._id) %>" data-element="<%= btoa(JSON.stringify(element)) %>" onclick="addPeopleToChat(this)">
+                  <% if(element.profilePic) { %>
                   <img src="<%=element.profilePic %>" alt="User" />
-                  <% } else{ %>
+                  <% } else { %>
                   <img src="https://avatar.iran.liara.run/username?username=<%= element.fullName.replace(' ', '+') %>" alt="User" />
                   <% } %>
                   <h3>

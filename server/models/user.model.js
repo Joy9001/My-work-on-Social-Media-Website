@@ -130,6 +130,4 @@ const userLinksSchema = new Schema(
 
 const UserLinks = mongoose.model("UserLinks", userLinksSchema);
 
-//module.exports={User, userSeeding};
-
 module.exports = { User, UserInfo, UserLinks };

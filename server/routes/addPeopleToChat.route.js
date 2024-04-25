@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
 const { addPeopleToChat } = require("../helpers/addPeopleToChat.helper.js");
-const User = require("../models/user.model");
+const { User } = require("../models/user.model");
 
 router.post("/add-people-to-chat", async (req, res) => {
 	try {

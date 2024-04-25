@@ -10,6 +10,7 @@ const indexRouter = require("./routes/index.route");
 const addPeopleToChatRouter = require("./routes/addPeopleToChat.route");
 const getConversationRouter = require("./routes/getConversation.route");
 const messageRouter = require("./routes/messages.route");
+const searchRouter = require("./routes/search.route");
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -32,9 +33,11 @@ app.use(indexRouter);
 app.use(addPeopleToChatRouter);
 app.use(getConversationRouter);
 app.use(messageRouter);
+app.use(searchRouter);
 
 server.listen(PORT, async () => {
 	await connectMongo().then(() => {
-		console.log(`Server is listening on port http://localhost:${PORT}`);
+		console.log("MongoDB connected");
+		console.log(`Server running on http://localhost:${PORT}`);
 	});
 });

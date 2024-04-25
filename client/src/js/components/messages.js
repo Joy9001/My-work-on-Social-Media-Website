@@ -330,7 +330,7 @@ const addPeopleToChat = (event) => {
 
 	leftPeople.forEach((person) => {
 		let data = JSON.parse(atob(person.dataset.element));
-		if (data._id === event.dataset.id) {
+		if (data._id === atob(event.dataset.id)) {
 			alreadyThere = true;
 			clickedPerson = person;
 		}
@@ -345,7 +345,7 @@ const addPeopleToChat = (event) => {
 			},
 			body: JSON.stringify({
 				senderId: currentUserId,
-				receiverId: event.dataset.id,
+				receiverId: atob(event.dataset.id),
 			}),
 		})
 			.then((res) => res.json())
@@ -628,4 +628,42 @@ const blockUnblockUser = (htmlElement) => {
 	}
 };
 
-addPeopleSearchBtn.addEventListener("click", () => {});
+const searchPeople = (event) => {
+	let queryText = event.target.value.toLowerCase();
+	let add_people = document.querySelectorAll(".popup-people");
+
+	if (queryText === "") {
+		add_people.forEach((person) => {
+			person.classList.remove("hidden");
+		});
+		return;
+	} else {
+		fetch("/search-people", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ queryText }),
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				// console.log("data.people: ", data.people);
+				add_people.forEach((person) => {
+					let personId = atob(person.dataset.id);
+					let personData = data.people.find(
+						(person) => person._id === personId
+					);
+					if (personData) {
+						person.classList.remove("hidden");
+					} else {
+						person.classList.add("hidden");
+					}
+				});
+			});
+	}
+};
+
+popup_search.addEventListener("keyup", (event) => searchPeople(event));
+addPeopleSearchBtn.addEventListener("click", () => {
+	searchPeople({ target: { value: popup_search.value } });
+});
