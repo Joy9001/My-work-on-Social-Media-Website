@@ -1,4 +1,5 @@
 const { User } = require("../models/user.model");
+const Follower = require("../models/follower.model");
 const searchController = async (req, res) => {
 	const { queryText } = req.body;
 
@@ -13,12 +14,45 @@ const searchController = async (req, res) => {
 		_id: 1,
 		fullName: 1,
 		username: 1,
+		profilePic: 1,
 	};
 
 	try {
 		const people = await User.find(query).select(projection);
 
-		return res.json({ people });
+		const followerPromises = people.map(async (person) => {
+			const follower = await Follower.findOne({ userId: person._id });
+			return follower;
+		});
+
+		let followers = await Promise.all(followerPromises);
+
+		followers = followers.filter((follower) => follower !== null);
+		console.log("followers: ", followers);
+		console.log("followers: ", followers.length);
+		console.log("persons: ", people.length);
+
+		let peopleWithFollowers = people.map((person, index) => {
+			if (!followers[index]) {
+				return {
+					_id: person._id,
+					fullName: person.fullName,
+					username: person.username,
+					followers: 0,
+					followings: 0,
+				};
+			}
+			return {
+				_id: person._id,
+				fullName: person.fullName,
+				profilePic: person.profilePic,
+				username: person.username,
+				followers: followers[index].followerCount,
+				followings: followers[index].followingCount,
+			};
+		});
+
+		return res.json({ people: peopleWithFollowers });
 	} catch (error) {
 		console.log("Error searching people: ", error.message);
 		return res.json({ message: "Error searching people" });
