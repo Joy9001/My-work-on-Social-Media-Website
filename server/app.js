@@ -10,7 +10,7 @@ const indexRouter = require("./routes/index.route");
 const addPeopleToChatRouter = require("./routes/addPeopleToChat.route");
 const getConversationRouter = require("./routes/getConversation.route");
 const messageRouter = require("./routes/messages.route");
-const searchRouter = require("./routes/search.route");
+const searchRouter = require("./routes/searchPeople.route");
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
