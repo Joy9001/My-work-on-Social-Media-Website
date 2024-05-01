@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const { User } = require("./user.model.js");
+const { User } = require("./users.model.js");
 
 const addedPeopleToChatSchema = new Schema({
 	senderId: {

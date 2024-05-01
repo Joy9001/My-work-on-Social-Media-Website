@@ -1,4 +1,4 @@
-const { User } = require("../models/user.model");
+const { User } = require("../models/users.model");
 const Follower = require("../models/follower.model");
 // const currentUserId = require("./currentUserId.helper.js");
 

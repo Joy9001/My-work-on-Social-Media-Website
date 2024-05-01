@@ -1,4 +1,4 @@
-const { User } = require("../models/user.model");
+const { User } = require("../models/users.model");
 const Follower = require("../models/follower.model");
 const searchController = async (req, res) => {
 	const { queryText } = req.body;

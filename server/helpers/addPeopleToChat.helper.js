@@ -1,5 +1,5 @@
 const AddedPeopleToChat = require("../models/addedPeopleToChat.model");
-// const user = require("../models/user.model");
+// const user = require("../models/users.model");
 
 const addPeopleToChat = async (senderId, receiverId, next) => {
 	try {

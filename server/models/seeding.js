@@ -1,4 +1,4 @@
-const { User, UserInfo, UserLinks } = require("./user.model");
+const { User, UserInfo, UserLinks } = require("./users.model");
 const Follower = require("./follower.model");
 const connectMongo = require("../db/connectMongo.db");
 const dotenv = require("dotenv");

@@ -34,6 +34,10 @@ const userSchema = new Schema(
 			],
 			default: "",
 		},
+		gender: {
+			type: Schema.Types.String,
+			default: "",
+		},
 		password: {
 			type: Schema.Types.String,
 			required: [true, "Please enter a password"],
@@ -55,10 +59,6 @@ const userSchema = new Schema(
 		role: {
 			type: Schema.Types.String,
 			default: "guest",
-		},
-		permissions: {
-			type: Schema.Types.Array,
-			default: ["read"],
 		},
 	},
 	{ timestamps: true }
@@ -92,18 +92,6 @@ const userInfoSchema = new Schema(
 			type: Schema.Types.String,
 			default: "",
 		},
-	},
-	{ timestamps: true }
-);
-
-const UserInfo = mongoose.model("UserInfo", userInfoSchema);
-
-const userLinksSchema = new Schema(
-	{
-		userId: {
-			type: Schema.Types.ObjectId,
-			ref: "User",
-		},
 		twitter: {
 			type: Schema.Types.String,
 			default: "",
@@ -128,6 +116,56 @@ const userLinksSchema = new Schema(
 	{ timestamps: true }
 );
 
-const UserLinks = mongoose.model("UserLinks", userLinksSchema);
+const UserInfo = mongoose.model("UserInfo", userInfoSchema);
 
-module.exports = { User, UserInfo, UserLinks };
+const userPostsSchema = new Schema(
+	{
+		userId: {
+			type: Schema.Types.ObjectId,
+			ref: "User",
+		},
+		posts: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "Post",
+				default: "",
+			},
+		],
+		saves: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "Post",
+				default: "",
+			},
+		],
+		likes: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "Post",
+				default: "",
+			},
+		],
+		comments: [
+			{
+				type: {
+					commentText: {
+						type: String,
+						required: true,
+						default: "",
+					},
+					commentedAt: {
+						type: Date,
+						required: true,
+						default: "",
+						immutable: true,
+					},
+				},
+			},
+		],
+	},
+	{ timestamps: true }
+);
+
+const UserPosts = mongoose.model("UserPosts", userPostsSchema);
+
+module.exports = { User, UserInfo, UserPosts };
