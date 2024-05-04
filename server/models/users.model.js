@@ -60,6 +60,10 @@ const userSchema = new Schema(
 			type: Schema.Types.String,
 			default: "guest",
 		},
+		permissions: {
+			type: Schema.Types.Array,
+			default: ["read"],
+		},
 	},
 	{ timestamps: true }
 );

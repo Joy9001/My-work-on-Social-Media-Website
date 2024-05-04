@@ -5,7 +5,12 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "../.env" });
 const numUsers = 20;
 
-console.log(process.env.MONGO_DB_URI);
+const jsonData = require("../Node.users.json");
+
+// console.log(jsonData);
+
+// console.log(process.env.MONGO_DB_URI);
+
 //seeds
 // const userSeeding = async () => {
 // 	const users = [];
@@ -27,135 +32,9 @@ console.log(process.env.MONGO_DB_URI);
 // 	});
 // });
 
-const jsonData = [
-	{
-		_id: {
-			$oid: "66124e6d542a986d86b6b6a6",
-		},
-	},
-	{
-		_id: {
-			$oid: "66124f2cdc9bf95196467d0a",
-		},
-	},
-	{
-		_id: {
-			$oid: "66124703427423a7ae39b203",
-		},
-	},
-	{
-		_id: {
-			$oid: "6612476c427423a7ae39b204",
-		},
-	},
-	{
-		_id: {
-			$oid: "66229cb2b180c7663e1763c9",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327ef3",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327ef4",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327ef5",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327ef6",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327ef7",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327ef8",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327ef9",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327efa",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327efb",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327efc",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327efd",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327efe",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327eff",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327f00",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327f01",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327f02",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327f03",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327f04",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327f05",
-		},
-	},
-	{
-		_id: {
-			$oid: "6626bdca904fc5d0c3327f06",
-		},
-	},
-];
-
 const idArray = jsonData.map((item) => item._id.$oid);
+
+// console.log(idArray);
 
 function formatDate(date) {
 	const day = date.getDate().toString().padStart(2, "0");
@@ -208,22 +87,22 @@ function formatDate(date) {
 // 	});
 // });
 
-const followerSeeding = async () => {
-	const followers = [];
-	for (let i = 0; i < numUsers; i++) {
-		followers.push({
-			userId: idArray[i],
-			followers: idArray.filter((id) => id !== idArray[i]),
-			followerCount: idArray.filter((id) => id !== idArray[i]).length,
-			following: idArray.filter((id) => id !== idArray[i]),
-			followingCount: idArray.filter((id) => id !== idArray[i]).length,
-		});
-	}
-	await Follower.insertMany(followers);
-};
+// const followerSeeding = async () => {
+// 	const followers = [];
+// 	for (let i = 0; i < numUsers; i++) {
+// 		followers.push({
+// 			userId: idArray[i],
+// 			followers: idArray.filter((id) => id !== idArray[i]),
+// 			followerCount: idArray.filter((id) => id !== idArray[i]).length,
+// 			following: idArray.filter((id) => id !== idArray[i]),
+// 			followingCount: idArray.filter((id) => id !== idArray[i]).length,
+// 		});
+// 	}
+// 	await Follower.insertMany(followers);
+// };
 
-connectMongo().then(() => {
-	followerSeeding().then(() => {
-		console.log("Seeding complete");
-	});
-});
+// connectMongo().then(() => {
+// 	followerSeeding().then(() => {
+// 		console.log("Seeding complete");
+// 	});
+// });
